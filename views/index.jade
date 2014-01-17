@@ -11,3 +11,10 @@ block content
     input(type='text', class="msg")
     button.send_message
       span Submit Message
+
+  script.
+     $(function(){
+        Chat.init();
+        Chat.index();
+     });
+     

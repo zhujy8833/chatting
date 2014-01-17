@@ -5,56 +5,37 @@ var Chat = {};
 Chat.init = function(){
 	var that = this;
 	var socket = io.connect('http://localhost:4444');
+    that.socket = socket;
+};
 
-    $(".enter").on('click', function(){
-    	$(".message.field").show();
-    	socket.emit('set nickname', $("input.nickname").val());
-    });
-    
-    $(".send_message").on('click', function(){
-		socket.emit("send message", {msg: $('.message.field').find('.msg').val().trim()});
+Chat.index = function() {
+	var that = this;
+	var socket = that.socket;
+	$('.enter').on('click', function(){
+		socket.emit('set nickname', $("input.nickname").val().trim());
+		window.location.href = '/room';
 	});
+};
+
+Chat.room = function() {
+	var that = this;
+	var socket = that.socket;
 
 	socket.on('ready', function (obj) {
       console.log(obj.nickname + 'Connected ! ');
-      $(".enter_result").append(["<p>",obj.nickname, " just entered the room.</p>"].join(""));
+      $(".user_enter_result").append(["<p>",obj.nickname, " just entered the room.</p>"].join(""));
     });
 
     socket.on('sent out', function(data){
-      $(".enter_result").append(["<p>" + data.msg + "</p>"].join(""));
+      $(".msg_board").append("<p><span class='user'>"+data.user+"</span> said: <span class='msg_content'>" + data.msg + "</span></p>");
 	});
-};
 
-// Chat.enterRoom = function() {
-// 	var name, socket;
-
-// 	name = $("input.nickname").val();
-// 	if (io === undefined){
-// 		alert("No Socket IO installed!");
-// 	} else if(!name.trim()){
-// 		alert("Fill in your nickname");
-// 	} else {
-// 		socket = io.connect('http://localhost:4444');
-// 		$(".message.field").show();
-// 		$(".send_message").on('click', function(){
-// 			socket.emit("send message", {msg: $('.message.field').find('.msg').val().trim()});
-// 		});
-
-// 		socket.emit('set nickname', name);
-// 		socket.on('sent out', function(data){
-// 	      $(".enter_result").append(["<p>" + data.msg + "</p>"].join(""));
-// 		});
-
-// 	    socket.on('ready', function (obj) {
-// 	      console.log(obj.nickname + 'Connected ! ');
-// 	      $(".enter_result").append(["<p>",obj.nickname, " just entered the room.</p>"].join(""));
-// 	    });
-// 	}
-
-
-// };
-Chat.render = function(){
+	$(".send_message").on('click', function(){
+		socket.emit("send message", {msg: $('.message.field').find('.msg').val().trim()});
+	});
 
 };
 
-Chat.init();
+
+
+//Chat.init();

@@ -5,7 +5,8 @@
 
 var express = require('express');
 var routes = require('./routes');
-var user = require('./routes/user');
+var room = require('./routes/room');
+//var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 var io = require('socket.io');
@@ -29,24 +30,22 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/room', room.index);
 
 var server = http.createServer(app);
 var serv_io = io.listen(server);
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
 //websocket
 serv_io.on('connection', function(socket){
 	socket.on('set nickname', function (name) {
-	    serv_io.sockets.emit('ready', {nickname : name}); 
+		socket.nickname = name;
+	    socket.broadcast.emit('ready', {nickname : name}); 
 	});
 
 	socket.on('send message', function(data){
-		serv_io.sockets.emit('sent out', data);
+		serv_io.sockets.emit('sent out', {user : socket.nickname, msg: data.msg});
 	});
-
-	// socket.on('disconnect', function(){
-	// 	socket.emit("user disconnected");
-	// });
 });
