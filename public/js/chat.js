@@ -4,7 +4,8 @@ var Chat = {};
 
 Chat.init = function(){
 	var that = this;
-	var socket = io.connect('http://localhost:4444');
+    var domain = document.domain === 'localhost' ? 'localhost:4444' : "chatting-room.herokuapp.com";
+	var socket = io.connect(['http://',domain].join(""));
     that.socket = socket;
 };
 
@@ -36,6 +37,3 @@ Chat.room = function() {
 
 };
 
-
-
-//Chat.init();
